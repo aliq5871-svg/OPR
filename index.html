@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>One Page Report - PPD Kota Marudu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ppd-purple:#6a1b9a;
+      --ppd-purple-dark:#4a0072;
+      --ppd-bg:#f8f3ff;
+    }
+    body { font-family:'Poppins',sans-serif; background:var(--ppd-bg); }
+    .btn-primary { background:linear-gradient(90deg,var(--ppd-purple),var(--ppd-purple-dark)); color:#fff; }
+    .btn-primary:hover { box-shadow:0 4px 10px rgba(106,27,154,0.3); transform:translateY(-1px); }
+    @media print {.no-print{display:none!important;} body{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}}
+    #report-preview{
+      width:210mm; height:297mm; background:white; border:6px solid var(--ppd-purple);
+      border-radius:16px; padding:30px 40px; box-shadow:0 0 20px rgba(106,27,154,0.2);
+      display:flex; flex-direction:column; justify-content:space-between;
+    }
+    header{text-align:center;border-bottom:4px solid var(--ppd-purple);padding-bottom:8px;}
+    header h1{color:var(--ppd-purple-dark);font-weight:800;text-transform:uppercase;font-size:22px;}
+    header p{color:#6a1b9a;font-weight:600;font-size:13px;}
+    .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 16px;font-size:13px;margin-top:8px;}
+    .section{margin-top:6px;font-size:13px;text-align:left;}
+    .section h3{font-weight:700;color:var(--ppd-purple-dark);border-left:4px solid var(--ppd-purple);padding-left:6px;margin-bottom:3px;font-size:13px;text-transform:uppercase;}
+    #preview-objectives li{list-style:decimal;margin-left:16px;}
+    #preview-image-gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:6px;}
+    #preview-image-gallery img{width:100%;height:100px;object-fit:cover;border-radius:8px;border:2px solid #e5d1ff;}
+    footer{text-align:center;font-size:12px;font-weight:600;color:var(--ppd-purple-dark);margin-top:4px;border-top:2px dashed #bbb;padding-top:6px;}
+  </style>
+</head>
+<body class="antialiased">
+  <main class="max-w-6xl mx-auto p-4">
+    <div class="no-print flex gap-2 mb-6">
+      <button onclick="showTab('form')" id="btnForm" class="px-6 py-3 rounded-xl font-semibold bg-white text-[var(--ppd-purple)] shadow-lg">📝 Borang Baru</button>
+      <button onclick="showTab('history')" id="btnHistory" class="px-6 py-3 rounded-xl font-semibold bg-white/60 text-slate-600 hover:bg-white">📋 Sejarah Laporan</button>
+    </div>
+
+    <!-- BORANG -->
+    <div id="form-section" class="grid lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-2xl shadow-xl p-6 no-print">
+        <h2 class="text-xl font-bold mb-3 text-[var(--ppd-purple-dark)]">📋 Maklumat Laporan</h2>
+        <form id="report-form" class="space-y-2 text-sm">
+          <div><label>Program / Aktiviti</label><input id="program" type="text" class="form-input w-full border rounded-lg px-2 py-1.5"></div>
+          <div><label>Tempat</label><input id="tempat" type="text" class="form-input w-full border rounded-lg px-2 py-1.5"></div>
+          <div class="grid grid-cols-2 gap-2">
+            <div><label>Tarikh</label><input id="tarikh" type="date" class="form-input w-full border rounded-lg px-2 py-1.5"></div>
+            <div><label>Masa</label><input id="masa" type="text" placeholder="8.00 pagi - 11.00 pagi" class="form-input w-full border rounded-lg px-2 py-1.5"></div>
+          </div>
+          <div><label>Ketua Program / PM / Pelapor</label><input id="ketua" type="text" class="form-input w-full border rounded-lg px-2 py-1.5"></div>
+          <div><label>Objektif (baris baharu untuk setiap objektif)</label><textarea id="objektif" rows="2" class="form-input w-full border rounded-lg px-2 py-1 resize-none"></textarea></div>
+          <div><label>Pencapaian Program / Aktiviti</label><textarea id="pencapaian" rows="2" class="form-input w-full border rounded-lg px-2 py-1 resize-none"></textarea></div>
+          <div><label>Isu Pelaksanaan</label><textarea id="isu" rows="2" class="form-input w-full border rounded-lg px-2 py-1 resize-none"></textarea></div>
+          <div><label>Tindakan Susulan / Penambahbaikan</label><textarea id="tindakan" rows="2" class="form-input w-full border rounded-lg px-2 py-1 resize-none"></textarea></div>
+          <div><label>Gambar Aktiviti (maks 4)</label><input id="gambar" type="file" accept="image/*" multiple class="w-full border p-2 rounded-lg"><div id="image-preview" class="grid grid-cols-4 gap-1 mt-1"></div></div>
+          <div><label>Disediakan Oleh</label><input id="disedia" type="text" class="form-input w-full border rounded-lg px-2 py-1.5"></div>
+          <div><label>Unit / Sektor</label><input id="unit" type="text" class="form-input w-full border rounded-lg px-2 py-1.5"></div>
+
+          <div class="flex gap-2 pt-2">
+            <button type="submit" class="btn-primary flex-1 py-2 rounded-lg font-bold">💾 Simpan Laporan</button>
+            <button type="button" onclick="resetForm()" class="px-4 py-2 rounded-lg bg-slate-200 text-slate-700 font-semibold">🔄 Reset</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- PRATONTON -->
+      <div class="bg-white rounded-2xl shadow-xl p-3">
+        <div class="flex justify-between items-center no-print mb-2">
+          <h2 class="text-md font-bold text-[var(--ppd-purple-dark)]">👁️ Pratonton</h2>
+          <button onclick="downloadPDF()" class="btn-primary px-3 py-2 rounded-lg text-xs font-semibold">📥 Muat Turun PDF</button>
+        </div>
+        <div id="report-preview">
+          <header>
+            <header>
+  <img src="https://i.imgur.com/4EGUuTx.png" alt="Logo KPM" class="mx-auto mb-2" style="height:60px;">
+  <h1 id="preview-program">PROGRAM / AKTIVITI</h1>
+  <p>ONE PAGE REPORT • PEJABAT PENDIDIKAN DAERAH KOTA MARUDU</p>
+</header>
+
+
+          <section>
+            <div class="info-grid">
+              <p><strong>Tempat:</strong> <span id="preview-tempat">-</span></p>
+              <p><strong>Tarikh:</strong> <span id="preview-tarikh">-</span></p>
+              <p><strong>Masa:</strong> <span id="preview-masa">-</span></p>
+              <p><strong>Ketua / PM / Pelapor:</strong> <span id="preview-ketua">-</span></p>
+            </div>
+            <div class="section"><h3>Objektif</h3><ul id="preview-objectives"></ul></div>
+            <div class="section"><h3>Pencapaian</h3><p id="preview-pencapaian">-</p></div>
+            <div class="section"><h3>Isu Pelaksanaan</h3><p id="preview-isu">-</p></div>
+            <div class="section"><h3>Tindakan Susulan / Penambahbaikan</h3><p id="preview-tindakan">-</p></div>
+            <div class="section"><h3>Gambar Aktiviti</h3><div id="preview-image-gallery"></div></div>
+          </section>
+
+          <footer>
+            <p id="preview-disedia">Disediakan oleh: -</p>
+            <p id="preview-unit">Unit / Sektor: -</p>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEJARAH -->
+    <div id="history-section" class="hidden">
+      <div class="bg-white rounded-2xl shadow-xl p-6">
+        <h2 class="text-xl font-bold mb-4 text-[var(--ppd-purple-dark)]">📚 Sejarah Laporan</h2>
+        <div id="history-list" class="space-y-2"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let allReports = JSON.parse(localStorage.getItem('onePagePPD')) || [];
+    let uploadedImages = [];
+
+    function updatePreview(){
+      ['program','tempat','tarikh','masa','ketua','pencapaian','isu','tindakan','disedia','unit'].forEach(id=>{
+        document.getElementById('preview-'+id).textContent=document.getElementById(id).value||'-';
+      });
+      const obj=document.getElementById('objektif').value.split('\n').filter(x=>x.trim());
+      document.getElementById('preview-objectives').innerHTML=obj.length?obj.map(o=>`<li>${o}</li>`).join(''):'<li>-</li>';
+      document.getElementById('preview-image-gallery').innerHTML=uploadedImages.map(s=>`<img src="${s}">`).join('');
+    }
+    document.querySelectorAll('#report-form input,#report-form textarea').forEach(el=>el.addEventListener('input',updatePreview));
+
+    document.getElementById('gambar').addEventListener('change',e=>{
+      const files=[...e.target.files];
+      if(files.length+uploadedImages.length>4){alert('Maksimum 4 gambar!');return;}
+      files.forEach(f=>{
+        const r=new FileReader();
+        r.onload=ev=>{uploadedImages.push(ev.target.result);updateImagePreview();updatePreview();};
+        r.readAsDataURL(f);
+      });
+    });
+    function updateImagePreview(){document.getElementById('image-preview').innerHTML=uploadedImages.map((s,i)=>`<div class='relative'><img src='${s}' class='w-full h-16 object-cover rounded'><button onclick='removeImage(${i})' class='absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1'>✕</button></div>`).join('');}
+    function removeImage(i){uploadedImages.splice(i,1);updateImagePreview();updatePreview();}
+
+    document.getElementById('report-form').addEventListener('submit',e=>{
+      e.preventDefault();
+      const d={
+        id:Date.now(),
+        program:program.value,tempat:tempat.value,tarikh:tarikh.value,masa:masa.value,
+        ketua:ketua.value,objektif:objektif.value,pencapaian:pencapaian.value,isu:isu.value,tindakan:tindakan.value,
+        disedia:disedia.value,unit:unit.value,gambar:uploadedImages,simpan:new Date().toISOString()
+      };
+      if(!d.program){alert('Sila isi nama program!');return;}
+      allReports.push(d);
+      localStorage.setItem('onePagePPD',JSON.stringify(allReports));
+      alert('✅ Laporan disimpan!');
+      resetForm();renderHistory();showTab('history');
+    });
+
+    function renderHistory(){
+      const list=document.getElementById('history-list');
+      if(allReports.length===0){list.innerHTML='<p class="text-center py-6 text-slate-400">Tiada laporan disimpan.</p>';return;}
+      list.innerHTML=allReports.slice().reverse().map(r=>`
+        <div class="border rounded-lg p-4 flex justify-between items-center bg-purple-50 hover:bg-purple-100">
+          <div><p class="font-semibold text-[var(--ppd-purple-dark)]">${r.program}</p>
+          <p class="text-xs text-slate-500">${new Date(r.simpan).toLocaleString('ms-MY')}</p></div>
+          <div class="flex gap-2">
+            <button onclick="viewReport(${r.id})" class="p-1 bg-white text-[var(--ppd-purple)] rounded shadow text-sm">👁️</button>
+            <button onclick="deleteReport(${r.id})" class="p-1 bg-red-100 text-red-600 rounded text-sm">🗑️</button>
+          </div>
+        </div>`).join('');
+    }
+
+    function viewReport(id){
+      const r=allReports.find(x=>x.id===id);
+      if(!r){alert('Laporan tidak dijumpai!');return;}
+      program.value=r.program||'';tempat.value=r.tempat||'';tarikh.value=r.tarikh||'';masa.value=r.masa||'';
+      ketua.value=r.ketua||'';objektif.value=r.objektif||'';pencapaian.value=r.pencapaian||'';
+      isu.value=r.isu||'';tindakan.value=r.tindakan||'';disedia.value=r.disedia||'';unit.value=r.unit||'';
+      uploadedImages=r.gambar||[];
+      updateImagePreview();updatePreview();showTab('form');
+    }
+
+    function deleteReport(id){
+      if(confirm('Padam laporan ini?')){
+        allReports=allReports.filter(x=>x.id!==id);
+        localStorage.setItem('onePagePPD',JSON.stringify(allReports));
+        renderHistory();
+      }
+    }
+
+    function resetForm(){document.getElementById('report-form').reset();uploadedImages=[];updateImagePreview();updatePreview();}
+    function showTab(tab){
+      const form=document.getElementById('form-section');
+      const hist=document.getElementById('history-section');
+      if(tab==='form'){form.classList.remove('hidden');hist.classList.add('hidden');}
+      else{form.classList.add('hidden');hist.classList.remove('hidden');renderHistory();}
+    }
+
+    function downloadPDF(){
+      const el=document.getElementById('report-preview');
+      html2pdf().set({margin:0,filename:'OnePage_Report.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(el).save();
+    }
+
+    updatePreview();renderHistory();
+  </script>
+</body>
+</html>
