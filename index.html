@@ -122,33 +122,82 @@ footer{text-align:center;font-size:12px;font-weight:600;color:var(--ppd-purple-d
        alt="Logo PPD Kota Marudu" " class="mx-auto mb-2" style="height:80px;">
           <p>ONE PAGE REPORT(OPR)</p>
           <h1 id="preview-program">PROGRAM / AKTIVITI</h1>
-          <p>PEJABAT PENDIDIKAN DAERAH KOTA MARUDU</p>
-        </header>
+                 </header>
 
-        <section>
-          <!-- Info Grid (susun semula: masa atas kanan, pegawai bawah kanan) -->
-          <div class="info-grid">
-            <div>
-              <p><strong>🌐 Tempat:</strong> <span id="preview-tempat">-</span></p>
-            </div>
-            <div>
-              <p><strong>🕐 Masa:</strong> <span id="preview-masa">-</span></p>
-            </div>
-            <div>
-              <p><strong>⌨ Tarikh:</strong> <span id="preview-tarikh">-</span></p>
-            </div>
-            <div>
-              <p><strong>👥 Pegawai Terlibat:</strong></p>
-              <ul id="preview-ketua-list" style="margin-left:20px;list-style-type:decimal;"></ul>
-            </div>
-          </div>
+       <section style="text-align:center; margin-top:10px; font-size:13px;">
 
-          <div class="section"><h3>Objektif</h3><ul id="preview-objectives"></ul></div>
-          <div class="section"><h3>Pencapaian</h3><p id="preview-pencapaian">-</p></div>
-          <div class="section"><h3>Isu Pelaksanaan</h3><p id="preview-isu">-</p></div>
-          <div class="section"><h3>Tindakan Susulan / Penambahbaikan</h3><p id="preview-tindakan">-</p></div>
-          <div class="section"><h3>Gambar Aktiviti</h3><div id="preview-image-gallery"></div></div>
-        </section>
+  <!-- Maklumat Program (dua lajur di tengah, jarak rapat bawah) -->
+  <div style="
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:60px;
+    text-align:left;
+    margin-bottom:4px; /* sebelum ini 12px → kini dirapatkan */
+    font-size:13px;
+    line-height:1.4;
+  ">
+
+    <!-- Lajur kiri -->
+    <div>
+      <p><strong>📍 Tempat:</strong> <span id="preview-tempat">-</span></p>
+      <p><strong>📆 Tarikh:</strong> <span id="preview-tarikh">-</span></p>
+    </div>
+
+    <!-- Lajur kanan -->
+    <div>
+      <p><strong>🕐 Masa:</strong> <span id="preview-masa">-</span></p>
+      <p style="margin-bottom:2px;"><strong>👥 Pegawai Terlibat:</strong></p>
+      <ul id="preview-ketua-list" style="
+        list-style-type:decimal;
+        margin-left:18px;
+        padding-left:0;
+        font-size:13px;
+        color:var(--ppd-purple-dark);
+        margin-top:0;
+      "></ul>
+    </div>
+
+  </div>
+
+  <!-- Objektif -->
+  <div class="section" style="text-align:left; display:inline-block; text-align:justify; width:90%; margin-top:4px;">
+    <h3>Objektif</h3>
+    <ul id="preview-objectives"></ul>
+  </div>
+
+  <!-- Pencapaian -->
+  <div class="section" style="text-align:left; display:inline-block; text-align:justify; width:90%;">
+    <h3>Pencapaian</h3>
+    <p id="preview-pencapaian">-</p>
+  </div>
+
+  <!-- Isu -->
+  <div class="section" style="text-align:left; display:inline-block; text-align:justify; width:90%;">
+    <h3>Isu Pelaksanaan</h3>
+    <p id="preview-isu">-</p>
+  </div>
+
+  <!-- Tindakan -->
+  <div class="section" style="text-align:left; display:inline-block; text-align:justify; width:90%;">
+    <h3>Tindakan Susulan / Penambahbaikan</h3>
+    <p id="preview-tindakan">-</p>
+  </div>
+
+  <!-- Gambar -->
+  <div class="section" style="text-align:center; width:90%; margin:0 auto;">
+    <h3>Gambar Aktiviti</h3>
+    <div id="preview-image-gallery" style="
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:6px;
+      margin-top:6px;
+    "></div>
+  </div>
+
+</section>
+
+
 
         <footer>
           <p id="preview-disedia">Disediakan oleh: -</p>
